@@ -11,7 +11,7 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
-// Funções Gerais
+// FunÃ§Ãµes Gerais
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -20,7 +20,7 @@ void consultar_biblioteca_de_jogos();
 void menu();
 void mostrar_arquivo();
 
-// Função para limpar o conteúdo, preenchendo com '\0'
+// FunÃ§Ã£o para limpar o conteÃºdo, preenchendo com '\0'
 void limparstring(char *array) {
     int i;
     for (i = 0; i < 255; i++) {
@@ -28,7 +28,7 @@ void limparstring(char *array) {
     }
 }
 
-// Conta quantos usuários existem no arquivo, retornando a quantidade de linhas
+// Conta quantos usuÃ¡rios existem no arquivo, retornando a quantidade de linhas
 int contar_usuarios() {
     FILE *arquivo;
     arquivo = fopen("usuarios.txt", "r");
@@ -46,7 +46,7 @@ int contar_usuarios() {
     return count;
 }
 
-// Encontra os usuários no arquivo e os carrega
+// Encontra os usuÃ¡rios no arquivo e os carrega
 int achar_usuario(cadastro **p) {
     FILE *arquivo;
     arquivo = fopen("usuarios.txt", "r");
@@ -57,10 +57,10 @@ int achar_usuario(cadastro **p) {
     }
 
     int num_usuarios = contar_usuarios();
-    *p = (cadastro *)malloc(num_usuarios * sizeof(cadastro));  // Aloca dinamicamente para o número de usuários
+    *p = (cadastro *)malloc(num_usuarios * sizeof(cadastro));  // Aloca dinamicamente para o nÃºmero de usuÃ¡rios
 
     if (*p == NULL) {
-        printf("Erro ao alocar memória\n");
+        printf("Erro ao alocar memÃ³ria\n");
         return 1;
     }
 
@@ -69,7 +69,7 @@ int achar_usuario(cadastro **p) {
 
     while (fgets(linha, 255, arquivo)) {
         char *token = strtok(linha, ";");
-        int contador = 0; // Variável para contar os campos (CPF, nome, senha)
+        int contador = 0; // VariÃ¡vel para contar os campos (CPF, nome, senha)
 
         while (token != NULL) {
             if (contador == 0) {
@@ -82,14 +82,14 @@ int achar_usuario(cadastro **p) {
             token = strtok(NULL, ";");
             contador++;
         }
-        posicao_struct++; // Avança para o próximo usuário
+        posicao_struct++; // AvanÃ§a para o prÃ³ximo usuÃ¡rio
     }
 
     fclose(arquivo);
     return 0;
 }
 
-// Função para o login, compara as informações recebidas do usuário com o arquivo.txt
+// FunÃ§Ã£o para o login, compara as informaÃ§Ãµes recebidas do usuÃ¡rio com o arquivo.txt
 void login(cadastro *p, int num_usuarios) {
     char nome[100];
     char cpf[12];
@@ -118,9 +118,9 @@ void login(cadastro *p, int num_usuarios) {
         }
 
         if (contador != 0) {
-            printf("|Usuário: %s\n", nome);
+            printf("|UsuÃ¡rio: %s\n", nome);
             menu(p);
-            getchar();  // Tirar o '\n' vindo da função
+            getchar();  // Tirar o '\n' vindo da funÃ§Ã£o
             char letra;
             printf("|Deseja sair(s/n)?|\n");
             scanf(" %c", &letra);
@@ -131,7 +131,7 @@ void login(cadastro *p, int num_usuarios) {
                 continue;
             }
         } else {
-            printf("Usuário não cadastrado ou dados incorretos\n");
+            printf("UsuÃ¡rio nÃ£o cadastrado ou dados incorretos\n");
             printf("Tente novamente !!!\n");
         }
     }
@@ -140,16 +140,16 @@ void login(cadastro *p, int num_usuarios) {
 int main() {
     setlocale(LC_ALL, "portuguese");
 
-    cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
+    cadastro *pessoas; // Ponteiro para armazenar os dados dos usuÃ¡rios
     int num_usuarios = contar_usuarios();
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
             login(pessoas, num_usuarios);
         }
-        free(pessoas); // Libera a memória alocada após o uso
+        free(pessoas); // Libera a memÃ³ria alocada apÃ³s o uso
     } else {
-        printf("Nenhum usuário encontrado no arquivo.\n");
+        printf("Nenhum usuÃ¡rio encontrado no arquivo.\n");
     }
 
     system("pause");
@@ -171,7 +171,7 @@ void menu(cadastro *p) {
         printf("| 4 - Consultar Biblioteca de Jogos |\n");
         printf("| 5 - Sair                          |\n");
         printf("|-----------------------------------|\n");
-        printf("Qual escolha você deseja: ");
+        printf("Qual escolha vocÃª deseja: ");
         fgets(escolha_str, sizeof(escolha_str), stdin);
         escolha = atoi(escolha_str); // Converte a string para inteiro
 
@@ -193,7 +193,7 @@ void menu(cadastro *p) {
                 system("pause");
                 exit(0);
             default:
-                printf("Essa opção não é válida!!\n");
+                printf("Essa opÃ§Ã£o nÃ£o Ã© vÃ¡lida!!\n");
         }
     }
 }
@@ -209,6 +209,15 @@ void vender_jogo() {
 
 void adicionar_jogo() {
     FILE *arquivo;
+// <<<<<<< Cheida-patch-1-FunÃƒÂ§ÃƒÂ£o-Adicionar-Jogos
+    
+    char nome[255];
+    char tipo[255];
+    float valor;
+    
+    arquivo = fopen("jogos.txt", "a");
+    
+=======
 
     char nome[255];
     char tipo[255];
@@ -220,14 +229,33 @@ void adicionar_jogo() {
 		printf("Erro ao abrir o arquivo!\n");
 		exit(1);
 	}
+// <<<<<<< Cheida-patch-1-FunÃƒÂ§ÃƒÂ£o-Adicionar-Jogos
+	
+	printf("|Qual Ã© o nome do jogo: ");
+	scanf("%s", &nome);
+	
+	printf("|Qual Ã© o tipo do jogo: ");
+	scanf("%s", &tipo);
+	
+	printf("|Qual Ã© o valor do jogo: ");
+	scanf("%f", &valor);
+	
+	getchar();
+	
+	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor);
+	
+	fclose(arquivo);
+	printf("AtualizaÃ§Ã£o feita com sucesso!!\n");
+	
+=======
 
-	printf("|Qual é o nome do jogo: ");
+	printf("|Qual Ã© o nome do jogo: ");
 	scanf("%s", &nome);
 
-	printf("|Qual é o tipo do jogo: ");
+	printf("|Qual Ã© o tipo do jogo: ");
 	scanf("%s", &tipo);
 
-	printf("|Qual é o valor do jogo: ");
+	printf("|Qual Ã© o valor do jogo: ");
 	scanf("%f", &valor);
 
 	getchar(); // Tirar o '\n'
@@ -235,7 +263,8 @@ void adicionar_jogo() {
 	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor); // Salva no arquivo, com esse formato escrito
 
 	fclose(arquivo);
-	printf("Atualização feita com sucesso!!\n");
+	printf("AtualizaÃ§Ã£o feita com sucesso!!\n");
+
 
 }
 
@@ -246,6 +275,8 @@ void remover_jogo() {
 void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
+// <<<<<<< Cheida-patch-1-FunÃƒÂ§ÃƒÂ£o-Adicionar-Jogos
+=======
 void mostrar_arquivo(){
 	FILE *arquivo;
 	char linhas[255];
@@ -262,5 +293,6 @@ void mostrar_arquivo(){
 	}
 	fclose(arquivo);
 }
+
 
 
