@@ -209,15 +209,7 @@ void vender_jogo() {
 
 void adicionar_jogo() {
     FILE *arquivo;
-// <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-    
-    char nome[255];
-    char tipo[255];
-    float valor;
-    
-    arquivo = fopen("jogos.txt", "a");
-    
-=======
+
 
     char nome[255];
     char tipo[255];
@@ -229,25 +221,6 @@ void adicionar_jogo() {
 		printf("Erro ao abrir o arquivo!\n");
 		exit(1);
 	}
-// <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-	
-	printf("|Qual é o nome do jogo: ");
-	scanf("%s", &nome);
-	
-	printf("|Qual é o tipo do jogo: ");
-	scanf("%s", &tipo);
-	
-	printf("|Qual é o valor do jogo: ");
-	scanf("%f", &valor);
-	
-	getchar();
-	
-	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor);
-	
-	fclose(arquivo);
-	printf("Atualização feita com sucesso!!\n");
-	
-=======
 
 	printf("|Qual é o nome do jogo: ");
 	scanf("%s", &nome);
