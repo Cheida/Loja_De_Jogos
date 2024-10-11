@@ -10,7 +10,7 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
-// Funções Gerais 
+// Funções Gerais
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -19,7 +19,7 @@ void consultar_biblioteca_de_jogos();
 void menu();
 
 // Função para limpar o conteúdo, preenchendo com '\0'
-void limparstring(char *array) { 
+void limparstring(char *array) {
     int i;
     for (i = 0; i < 255; i++) {
         array[i] = '\0';
@@ -34,7 +34,7 @@ int contar_usuarios() {
         printf("Erro ao abrir o arquivo\n");
         return -1;
     }
-    
+
     int count = 0;
     char linha[255];
     while (fgets(linha, sizeof(linha), arquivo)) {
@@ -48,12 +48,12 @@ int contar_usuarios() {
 int achar_usuario(cadastro **p) {
     FILE *arquivo;
     arquivo = fopen("usuarios.txt", "r");
-    
+
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo\n");
         return 1;
     }
-    
+
     int num_usuarios = contar_usuarios();
     *p = (cadastro *)malloc(num_usuarios * sizeof(cadastro));  // Aloca dinamicamente para o número de usuários
 
@@ -64,11 +64,11 @@ int achar_usuario(cadastro **p) {
 
     int posicao_struct = 0;
     char linha[255];
-    
+
     while (fgets(linha, 255, arquivo)) {
         char *token = strtok(linha, ";");
         int contador = 0; // Variável para contar os campos (CPF, nome, senha)
-        
+
         while (token != NULL) {
             if (contador == 0) {
                 strcpy((*p)[posicao_struct].cpf, token); // Armazena o CPF
@@ -107,7 +107,7 @@ void login(cadastro *p, int num_usuarios) {
         scanf("%s", senha);
         getchar();
         printf("|-----------------------------------|\n");
-        
+
         int i, contador = 0;
         for (i = 0; i < num_usuarios; i++) {
             if (strcmp(cpf, p[i].cpf) == 0 && strcmp(nome, p[i].nome) == 0 && strcmp(senha, p[i].senha) == 0) {
@@ -137,10 +137,10 @@ void login(cadastro *p, int num_usuarios) {
 
 int main() {
     setlocale(LC_ALL, "portuguese");
-    
+
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
-    
+
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
             login(pessoas, num_usuarios);
@@ -154,19 +154,20 @@ int main() {
     return 0;
 }
 
-// Menu 
+// Menu
 void menu(cadastro *p) {
     int escolha;
     char escolha_str[10];
 
     while (1) {
         printf("|-----------------------------------|\n");
-        printf("|         Bem-Vindo da Loja         |\n");
+        printf("|         Bem-Vindo a Loja          |\n");
         printf("|-----------------------------------|\n");
         printf("| 1 - Comprar Jogo                  |\n");
         printf("| 2 - Vender Jogo                   |\n");
-        printf("| 3 - Consultar Biblioteca de Jogos |\n");
-        printf("| 4 - Sair                          |\n");
+        printf("| 3 - Adicionar Jogo                |\n");
+        printf("| 4 - Consultar Biblioteca de Jogos |\n");
+        printf("| 5 - Sair                          |\n");
         printf("|-----------------------------------|\n");
         printf("Qual escolha você deseja: ");
         fgets(escolha_str, sizeof(escolha_str), stdin);
@@ -180,10 +181,14 @@ void menu(cadastro *p) {
                 vender_jogo();
                 break;
             case 3:
-                consultar_biblioteca_de_jogos();
+                adicionar_jogo();
                 break;
             case 4:
+                consultar_biblioteca_de_jogos();
+                break;
+            case 5:
                 printf("Ficando OFF...\n");
+                system("pause");
                 exit(0);
             default:
                 printf("Essa opção não é válida!!\n");
@@ -200,7 +205,35 @@ void vender_jogo() {
 }
 
 void adicionar_jogo() {
-    printf("Hello World 3\n");
+    FILE *arquivo;
+    
+    char nome[255];
+    char tipo[255];
+    float valor;
+    
+    arquivo = fopen("jogos.txt", "a");
+    
+    if (arquivo == NULL) {
+		printf("Erro ao abrir o arquivo!\n");
+		exit(1);
+	}
+	
+	printf("|Qual é o nome do jogo: ");
+	scanf("%s", &nome);
+	
+	printf("|Qual é o tipo do jogo: ");
+	scanf("%s", &tipo);
+	
+	printf("|Qual é o valor do jogo: ");
+	scanf("%f", &valor);
+	
+	getchar();
+	
+	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor);
+	
+	fclose(arquivo);
+	printf("Atualização feita com sucesso!!\n");
+	
 }
 
 void remover_jogo() {
@@ -210,4 +243,3 @@ void remover_jogo() {
 void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
-
