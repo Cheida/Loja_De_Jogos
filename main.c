@@ -208,6 +208,8 @@ void menu(cadastro *p) {
     }
 }
 
+// Carrega os jogos existentes no arquivo jogos.txt
+
 void carrega_jogos(struct jogo **jogos, int *num_jogos){
 	int i = 0;
 	FILE *file = fopen("jogos.txt", "r");
@@ -275,7 +277,7 @@ void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
 // <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-=======
+
 void mostrar_arquivo(){
 	FILE *arquivo;
 	char linhas[255];
