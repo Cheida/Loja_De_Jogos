@@ -11,7 +11,15 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
+// struct que armazena o jogos disponíveis
+struct jogo {
+    char nome[50];
+    float preco;
+    int quantidade;
+};
+
 // Funções Gerais
+void carrega_jogos(struct jogo **jogos, int *num_jogos);
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -139,12 +147,14 @@ void login(cadastro *p, int num_usuarios) {
 
 int main() {
     setlocale(LC_ALL, "portuguese");
-
+	struct jogo *jogos = NULL;
+    int num_jogos = 0; 
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
+	    carrega_jogos(&jogos, &num_jogos);		
             login(pessoas, num_usuarios);
         }
         free(pessoas); // Libera a memória alocada após o uso
@@ -197,6 +207,22 @@ void menu(cadastro *p) {
         }
     }
 }
+
+void carrega_jogos(struct jogo **jogos, int *num_jogos){
+	int i = 0;
+	FILE *file = fopen("jogos.txt", "r");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo de jogos.\n");
+        return 0;
+    }
+
+
+    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->quantidade) != EOF) {
+    	i++;
+    }
+    fclose(file);
+    return i;
+};
 
 void comprar_jogo() {
 		printf("Hello Wordl 1\n");
