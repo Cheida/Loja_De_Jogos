@@ -3,7 +3,10 @@
 #include <locale.h>
 #include <string.h>
 
+int indice;
+int i = 0;
 float carteira[10]={};
+
 // struct que armazena o cadastro dos usuarios
 typedef struct cadastro {
     char cpf[12];
@@ -100,7 +103,7 @@ int achar_usuario(cadastro **p) {
 }
 
 // Função para o login, compara as informações recebidas do usuário com o arquivo.txt
-void login(cadastro *p, int num_usuarios) {
+void login(cadastro *p, int num_usuarios, int *indice) {
     char nome[100];
     char cpf[12];
     char senha[10];
@@ -126,7 +129,7 @@ void login(cadastro *p, int num_usuarios) {
                 contador++;
             }
         }
-
+	*indice = contador;
         if (contador != 0) {
             printf("|Usuário: %s\n", nome);
             menu(p);
