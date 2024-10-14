@@ -4,7 +4,6 @@
 #include <string.h>
 #define NUM_OF_USERS 10
 int indice;
-int i = 0;
 
 float carteira[NUM_OF_USERS]={};
 
@@ -179,6 +178,7 @@ void login(cadastro *p, int num_usuarios) {
         for (i = 0; i < num_usuarios; i++) {
             if (strcmp(cpf, p[i].cpf) == 0 && strcmp(nome, p[i].nome) == 0 && strcmp(senha, p[i].senha) == 0) {
                 contador++;
+                indice = i;
             }
         }
 
@@ -287,7 +287,7 @@ void depositar_credito(float *carteira){
             break;
         }
     }
-    
+
 }
 
 
