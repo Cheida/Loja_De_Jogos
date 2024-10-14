@@ -14,8 +14,9 @@ typedef struct cadastro {
 // struct que armazena o jogos disponíveis
 struct jogo {
     char nome[50];
+    char tipo [10];
     float preco;
-    char tipo;
+    
 };
 
 // Funções Gerais
@@ -151,10 +152,10 @@ int main() {
     int num_jogos = 0; 
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
+	carrega_jogos(&jogos, &num_jogos);
 
     if (num_usuarios > 0) {
-        if (achar_usuario(&pessoas) == 0) {
-	    carrega_jogos(&jogos, &num_jogos);		
+        if (achar_usuario(&pessoas) == 0) {		
             login(pessoas, num_usuarios);
         }
         free(pessoas); // Libera a memória alocada após o uso
@@ -218,24 +219,27 @@ void carrega_jogos(struct jogo **jogos, int *num_jogos){
         return 0;
     }
 
-
-    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->tipo) != EOF) {
-    	i++;
+    struct jogo temp_jogos[100];
+    while (fscanf(file, "Nome: %s; tipo: %s; valor: %f\n", temp_jogos[i].nome, temp_jogos[i].tipo, &temp_jogos[i].preco) != EOF) {
+        i++;
     }
     fclose(file);
     return i;
 };
 
-void comprar_jogo() {
+void comprar_jogo(struct jogo *jogos, int num_jogos) {
 	FILE *arquivo;
 
 	char nome[255];
 	char tipo [255];
 	int opcao;
 
-	for (int i = 0; i < num_jogos; i++){
-		
-	};
+	printf("\nJogos disponíveis:\n");
+    	for (int i = 0; i < num_jogos; i++) {
+        	printf("%d. Nome: %s, Tipo: %s, Preço: R$%.2f\n", i + 1, jogos[i].nome, jogos[i].tipo, jogos[i].preco);
+    	}
+
+	
 	
 }
 
