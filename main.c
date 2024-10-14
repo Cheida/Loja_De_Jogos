@@ -259,9 +259,9 @@ void menu(cadastro *p) {
                 break;
             case 5:
                 depositar_credito(carteira);
-                atualizacao_das_carteiras(carteira);
                 break;
             case 6:
+                atualizacao_das_carteiras(carteira);
                 printf("Ficando OFF...\n");
                 system("pause");
                 exit(0);
@@ -366,6 +366,7 @@ void atualizacao_das_carteiras(float *carteira){
     FILE *carteirafile;
 
     carteirafile = fopen("creditos.bin","wb");
+    
      size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
      fclose(carteirafile);
 }
@@ -374,6 +375,11 @@ void iniciacao_arquivos(float *carteira){
     FILE *carteirafile;
 
     carteirafile = fopen("creditos.bin","rb");
+
+    if (carteirafile == NULL){
+        printf("Erro ao abrir o arquivo\n");
+    }
+    
      size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
      fclose(carteirafile);
 }
