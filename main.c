@@ -3,7 +3,7 @@
 #include <locale.h>
 #include <string.h>
 
-
+float carteira[10]={};
 // struct que armazena o cadastro dos usuarios
 typedef struct cadastro {
     char cpf[12];
@@ -19,7 +19,9 @@ struct jogo {
 };
 
 // Funções Gerais
+void iniciacao_aquivo(float *carteira);
 void carrega_jogos(struct jogo **jogos, int *num_jogos);
+void depositar_creditos(float *carteira);
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -179,7 +181,8 @@ void menu(cadastro *p) {
         printf("| 2 - Vender Jogo                   |\n");
         printf("| 3 - Adicionar Jogo                |\n");
         printf("| 4 - Consultar Biblioteca de Jogos |\n");
-        printf("| 5 - Sair                          |\n");
+	     printf("| 5 -      Depositar Créditos      |\n");
+        printf("| 6 - Sair                          |\n");
         printf("|-----------------------------------|\n");
         printf("Qual escolha você deseja: ");
         fgets(escolha_str, sizeof(escolha_str), stdin);
@@ -198,7 +201,10 @@ void menu(cadastro *p) {
             case 4:
                 consultar_biblioteca_de_jogos();
                 break;
-            case 5:
+		case 5:
+			depositar_creditos(carteira);
+			break;
+            case 6:
                 printf("Ficando OFF...\n");
                 system("pause");
                 exit(0);
@@ -225,7 +231,39 @@ void carrega_jogos(struct jogo **jogos, int *num_jogos){
     fclose(file);
     return i;
 };
+void atualiza_credito(float*carteira){
+	FILE *carteirafile;
 
+	carteirafile = fopen("creditos.bin","wb");
+     size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
+     fclose(carteirafile);
+}
+void iniciacao_arquivo(float*carteira){
+	FILE *carteirafile;
+	
+	carteirafile = fopen("creditos.bin","rb");
+     size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
+     fclose(carteirafile);
+}
+
+void depositar_creditos(float*carteira){
+	
+    	float valor;
+	while(1){
+		printf("Quanto deseja depositar de créditos (ou 0 para não depositar): ");
+    		scanf("%f", &valor);
+		if (valor < 0){
+			printf("Digite um valor válido!\n");
+		}
+		else {
+			carteira[indice] += valor;	
+			break
+		}
+		
+	}
+	atualiza_credito(carteira);
+	
+}
 void comprar_jogo() {
 		printf("Hello Wordl 1\n");
 }
