@@ -283,6 +283,7 @@ void depositar_credito(float *carteira){
         }
         else{
             carteira[indice] += valor;
+            printf("Depósito realizado com sucesso!!\n");
             getchar();
             break;
         }
