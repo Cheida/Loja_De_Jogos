@@ -11,7 +11,15 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
+// struct que armazena o jogos disponíveis
+struct jogo {
+    char nome[50];
+    float preco;
+    int quantidade;
+};
+
 // Funções Gerais
+void carrega_jogos(struct jogo **jogos, int *num_jogos);
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -139,12 +147,14 @@ void login(cadastro *p, int num_usuarios) {
 
 int main() {
     setlocale(LC_ALL, "portuguese");
-
+	struct jogo *jogos = NULL;
+    int num_jogos = 0; 
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
+	    carrega_jogos(&jogos, &num_jogos);		
             login(pessoas, num_usuarios);
         }
         free(pessoas); // Libera a memória alocada após o uso
@@ -198,6 +208,24 @@ void menu(cadastro *p) {
     }
 }
 
+// Carrega os jogos existentes no arquivo jogos.txt
+
+void carrega_jogos(struct jogo **jogos, int *num_jogos){
+	int i = 0;
+	FILE *file = fopen("jogos.txt", "r");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo de jogos.\n");
+        return 0;
+    }
+
+
+    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->quantidade) != EOF) {
+    	i++;
+    }
+    fclose(file);
+    return i;
+};
+
 void comprar_jogo() {
 		printf("Hello Wordl 1\n");
 }
@@ -209,15 +237,7 @@ void vender_jogo() {
 
 void adicionar_jogo() {
     FILE *arquivo;
-// <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-    
-    char nome[255];
-    char tipo[255];
-    float valor;
-    
-    arquivo = fopen("jogos.txt", "a");
-    
-=======
+
 
     char nome[255];
     char tipo[255];
@@ -229,25 +249,6 @@ void adicionar_jogo() {
 		printf("Erro ao abrir o arquivo!\n");
 		exit(1);
 	}
-// <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-	
-	printf("|Qual é o nome do jogo: ");
-	scanf("%s", &nome);
-	
-	printf("|Qual é o tipo do jogo: ");
-	scanf("%s", &tipo);
-	
-	printf("|Qual é o valor do jogo: ");
-	scanf("%f", &valor);
-	
-	getchar();
-	
-	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor);
-	
-	fclose(arquivo);
-	printf("Atualização feita com sucesso!!\n");
-	
-=======
 
 	printf("|Qual é o nome do jogo: ");
 	scanf("%s", &nome);
@@ -276,7 +277,7 @@ void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
 // <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
-=======
+
 void mostrar_arquivo(){
 	FILE *arquivo;
 	char linhas[255];
