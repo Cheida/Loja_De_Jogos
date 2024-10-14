@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
-
+#define NUM_OF_USERS 10
 int indice;
 int i = 0;
-float carteira[10]={};
+
+float carteira[NUM_OF_USERS]={};
 
 // struct que armazena o cadastro dos usuarios
 typedef struct cadastro {
@@ -15,16 +16,16 @@ typedef struct cadastro {
 } cadastro;
 
 // struct que armazena o jogos disponíveis
-struct jogo {
+typedef struct jogo {
     char nome[50];
+    char tipo [10];
     float preco;
-    int quantidade;
-};
+} jogo;
 
 // Funções Gerais
-void iniciacao_aquivo(float *carteira);
-void carrega_jogos(struct jogo **jogos, int *num_jogos);
-void depositar_creditos(float *carteira);
+void depositar_credito(float *carteira);
+void iniciacao_arquivos(float *carteira);
+void atualizacao_das_carteiras(float *carteira);
 void comprar_jogo();
 void vender_jogo();
 void adicionar_jogo();
@@ -41,6 +42,18 @@ void limparstring(char *array) {
     }
 }
 
+int quant_jogos(){
+    FILE *arquivo;
+    arquivo = fopen("jogos.txt", "r");
+
+    int cont = 0;
+    char linha[255];
+    while(fgets(linha, sizeof(linha), arquivo)){
+        cont++;
+    }
+    fclose(arquivo);
+    return cont;
+}
 // Conta quantos usuários existem no arquivo, retornando a quantidade de linhas
 int contar_usuarios() {
     FILE *arquivo;
@@ -57,6 +70,45 @@ int contar_usuarios() {
     }
     fclose(arquivo);
     return count;
+}
+
+int carregar_jogos(jogo **j){
+    FILE *arquivo;
+    arquivo = fopen("jogos.txt","r");
+
+    if (arquivo == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        return 1;
+    }
+
+    int num_jogos = quant_jogos();
+    *j = (jogo *)malloc(num_jogos * sizeof(jogo));
+
+    if (*j == NULL){
+        printf("Erro ao alocar memória\n");
+        return 1;
+    }
+    int posicao_struct = 0;
+    char linha[255];
+
+    while (fgets(linha, 255, arquivo)) {
+        char *token = strtok(linha, ";");
+        int cont = 0; // Variável para contar os campos (nome, tipo, preco)
+
+        while (token != NULL) {
+            if (cont == 0) {
+                strcpy((*j)[posicao_struct].nome, token); // Armazena o nome
+            } else if (cont == 1) {
+                strcpy((*j)[posicao_struct].tipo, token); // Armazena o tipo
+            } else if (cont == 2) {
+                (*j)[posicao_struct].preco = atof(token); // Armazena a preco
+            }
+            token = strtok(NULL, ";");
+            cont++;
+        }
+        posicao_struct++; // Avança para o próximo jogo
+    }
+
 }
 
 // Encontra os usuários no arquivo e os carrega
@@ -103,7 +155,7 @@ int achar_usuario(cadastro **p) {
 }
 
 // Função para o login, compara as informações recebidas do usuário com o arquivo.txt
-void login(cadastro *p, int num_usuarios, int *indice) {
+void login(cadastro *p, int num_usuarios) {
     char nome[100];
     char cpf[12];
     char senha[10];
@@ -129,7 +181,7 @@ void login(cadastro *p, int num_usuarios, int *indice) {
                 contador++;
             }
         }
-	*indice = contador;
+
         if (contador != 0) {
             printf("|Usuário: %s\n", nome);
             menu(p);
@@ -152,14 +204,15 @@ void login(cadastro *p, int num_usuarios, int *indice) {
 
 int main() {
     setlocale(LC_ALL, "portuguese");
-	struct jogo *jogos = NULL;
-    int num_jogos = 0; 
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
+    jogo *jogos;
+    int num_jogos = quant_jogos();
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
-	    carrega_jogos(&jogos, &num_jogos);		
+            iniciacao_arquivos(carteira);
+            carregar_jogos(&jogos);
             login(pessoas, num_usuarios);
         }
         free(pessoas); // Libera a memória alocada após o uso
@@ -184,7 +237,7 @@ void menu(cadastro *p) {
         printf("| 2 - Vender Jogo                   |\n");
         printf("| 3 - Adicionar Jogo                |\n");
         printf("| 4 - Consultar Biblioteca de Jogos |\n");
-	     printf("| 5 -      Depositar Créditos      |\n");
+        printf("| 5 - Depositar Crédito             |\n");
         printf("| 6 - Sair                          |\n");
         printf("|-----------------------------------|\n");
         printf("Qual escolha você deseja: ");
@@ -204,9 +257,10 @@ void menu(cadastro *p) {
             case 4:
                 consultar_biblioteca_de_jogos();
                 break;
-		case 5:
-			depositar_creditos(carteira);
-			break;
+            case 5:
+                depositar_credito(carteira);
+                atualizacao_das_carteiras(carteira);
+                break;
             case 6:
                 printf("Ficando OFF...\n");
                 system("pause");
@@ -217,58 +271,29 @@ void menu(cadastro *p) {
     }
 }
 
-// Carrega os jogos existentes no arquivo jogos.txt
+void depositar_credito(float *carteira){
+    float valor;
 
-void carrega_jogos(struct jogo **jogos, int *num_jogos){
-	int i = 0;
-	FILE *file = fopen("jogos.txt", "r");
-    if (file == NULL) {
-        printf("Erro ao abrir o arquivo de jogos.\n");
-        return 0;
+    while(1){
+        printf("Quanto deseja depositar (ou 0 para não depositar): ");
+        scanf("%f", &valor);
+
+        if (valor < 0){
+            printf("Valor inválido!!\n");
+        }
+        else{
+            carteira[indice] += valor;
+            getchar();
+            break;
+        }
     }
-
-
-    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->quantidade) != EOF) {
-    	i++;
-    }
-    fclose(file);
-    return i;
-};
-void atualiza_credito(float*carteira){
-	FILE *carteirafile;
-
-	carteirafile = fopen("creditos.bin","wb");
-     size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
-     fclose(carteirafile);
-}
-void iniciacao_arquivo(float*carteira){
-	FILE *carteirafile;
-	
-	carteirafile = fopen("creditos.bin","rb");
-     size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
-     fclose(carteirafile);
+    
 }
 
-void depositar_creditos(float*carteira){
-	
-    	float valor;
-	while(1){
-		printf("Quanto deseja depositar de créditos (ou 0 para não depositar): ");
-    		scanf("%f", &valor);
-		if (valor < 0){
-			printf("Digite um valor válido!\n");
-		}
-		else {
-			carteira[indice] += valor;	
-			break
-		}
-		
-	}
-	atualiza_credito(carteira);
-	
-}
+
+
 void comprar_jogo() {
-		printf("Hello Wordl 1\n");
+        printf("Hello Wordl 1\n");
 }
 
 
@@ -287,25 +312,25 @@ void adicionar_jogo() {
     arquivo = fopen("jogos.txt", "a"); // Abre o arquivo jogos.txt para atualizar
 
     if (arquivo == NULL) {
-		printf("Erro ao abrir o arquivo!\n");
-		exit(1);
-	}
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
 
-	printf("|Qual é o nome do jogo: ");
-	scanf("%s", &nome);
+    printf("|Qual é o nome do jogo: ");
+    scanf("%s", &nome);
 
-	printf("|Qual é o tipo do jogo: ");
-	scanf("%s", &tipo);
+    printf("|Qual é o tipo do jogo: ");
+    scanf("%s", &tipo);
 
-	printf("|Qual é o valor do jogo: ");
-	scanf("%f", &valor);
+    printf("|Qual é o valor do jogo: ");
+    scanf("%f", &valor);
 
-	getchar(); // Tirar o '\n'
+    getchar(); // Tirar o '\n'
 
-	fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor); // Salva no arquivo, com esse formato escrito
+    fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor); // Salva no arquivo, com esse formato escrito
 
-	fclose(arquivo);
-	printf("Atualização feita com sucesso!!\n");
+    fclose(arquivo);
+    printf("Atualização feita com sucesso!!\n");
 
 
 }
@@ -320,21 +345,34 @@ void consultar_biblioteca_de_jogos() {
 // <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
 
 void mostrar_arquivo(){
-	FILE *arquivo;
-	char linhas[255];
+    FILE *arquivo;
+    char linhas[255];
 
-	arquivo = fopen("jogos.txt", "r"); // Abre o arquivo para ler
+    arquivo = fopen("jogos.txt", "r"); // Abre o arquivo para ler
 
-	if (arquivo == NULL) {
-		printf("Erro ao abrir o arquivo!\n");
-		exit(1);
-	}
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
 
-	while (fgets(linhas, sizeof(linhas), arquivo)){ // Ele vai ler o arquivo linha por linha e vai mostrar no console
-		printf("%s", linhas);
-	}
-	fclose(arquivo);
+    while (fgets(linhas, sizeof(linhas), arquivo)){ // Ele vai ler o arquivo linha por linha e vai mostrar no console
+        printf("%s", linhas);
+    }
+    fclose(arquivo);
 }
 
+void atualizacao_das_carteiras(float *carteira){
+    FILE *carteirafile;
 
+    carteirafile = fopen("creditos.bin","wb");
+     size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
+     fclose(carteirafile);
+}
 
+void iniciacao_arquivos(float *carteira){
+    FILE *carteirafile;
+
+    carteirafile = fopen("creditos.bin","rb");
+     size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
+     fclose(carteirafile);
+}
