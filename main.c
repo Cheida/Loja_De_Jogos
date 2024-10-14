@@ -15,7 +15,7 @@ typedef struct cadastro {
 struct jogo {
     char nome[50];
     float preco;
-    int quantidade;
+    char tipo;
 };
 
 // Funções Gerais
@@ -219,7 +219,7 @@ void carrega_jogos(struct jogo **jogos, int *num_jogos){
     }
 
 
-    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->quantidade) != EOF) {
+    while (fscanf(file, "%s %f %d", jogos[i]->nome, &jogos[i]->preco, &jogos[i]->tipo) != EOF) {
     	i++;
     }
     fclose(file);
