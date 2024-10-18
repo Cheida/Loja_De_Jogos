@@ -14,26 +14,26 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
-// struct que armazena o jogos disponÃ­veis
+// struct que armazena o jogos disponíveis
 typedef struct jogo {
     char nome[50];
     char tipo [10];
     float preco;
 } jogo;
 
-// FunÃ§Ãµes Gerais
+// Funções Gerais
 void depositar_credito(float *carteira);
 void iniciacao_arquivos(float *carteira);
 void atualizacao_das_carteiras(float *carteira);
 void comprar_jogo();
 void vender_jogo();
-void adicionar_jogo();
+void adicionar_avaliacao();
 void remover_jogo();
 void consultar_biblioteca_de_jogos();
 void menu();
 void mostrar_arquivo();
 
-// FunÃ§Ã£o para limpar o conteÃºdo, preenchendo com '\0'
+// Função para limpar o conteúdo, preenchendo com '\0'
 void limparstring(char *array) {
     int i;
     for (i = 0; i < 255; i++) {
@@ -53,7 +53,7 @@ int quant_jogos(){
     fclose(arquivo);
     return cont;
 }
-// Conta quantos usuÃ¡rios existem no arquivo, retornando a quantidade de linhas
+// Conta quantos usuários existem no arquivo, retornando a quantidade de linhas
 int contar_usuarios() {
     FILE *arquivo;
     arquivo = fopen("usuarios.txt", "r");
@@ -84,7 +84,7 @@ int carregar_jogos(jogo **j){
     *j = (jogo *)malloc(num_jogos * sizeof(jogo));
 
     if (*j == NULL){
-        printf("Erro ao alocar memÃ³ria\n");
+        printf("Erro ao alocar memória\n");
         return 1;
     }
     int posicao_struct = 0;
@@ -92,7 +92,7 @@ int carregar_jogos(jogo **j){
 
     while (fgets(linha, 255, arquivo)) {
         char *token = strtok(linha, ";");
-        int cont = 0; // VariÃ¡vel para contar os campos (nome, tipo, preco)
+        int cont = 0; // Variável para contar os campos (nome, tipo, preco)
 
         while (token != NULL) {
             if (cont == 0) {
@@ -105,12 +105,12 @@ int carregar_jogos(jogo **j){
             token = strtok(NULL, ";");
             cont++;
         }
-        posicao_struct++; // AvanÃ§a para o prÃ³ximo jogo
+        posicao_struct++; // Avança para o próximo jogo
     }
 
 }
 
-// Encontra os usuÃ¡rios no arquivo e os carrega
+// Encontra os usuários no arquivo e os carrega
 int achar_usuario(cadastro **p) {
     FILE *arquivo;
     arquivo = fopen("usuarios.txt", "r");
@@ -121,10 +121,10 @@ int achar_usuario(cadastro **p) {
     }
 
     int num_usuarios = contar_usuarios();
-    *p = (cadastro *)malloc(num_usuarios * sizeof(cadastro));  // Aloca dinamicamente para o nÃºmero de usuÃ¡rios
+    *p = (cadastro *)malloc(num_usuarios * sizeof(cadastro));  // Aloca dinamicamente para o número de usuários
 
     if (*p == NULL) {
-        printf("Erro ao alocar memÃ³ria\n");
+        printf("Erro ao alocar memória\n");
         return 1;
     }
 
@@ -133,7 +133,7 @@ int achar_usuario(cadastro **p) {
 
     while (fgets(linha, 255, arquivo)) {
         char *token = strtok(linha, ";");
-        int contador = 0; // VariÃ¡vel para contar os campos (CPF, nome, senha)
+        int contador = 0; // Variável para contar os campos (CPF, nome, senha)
 
         while (token != NULL) {
             if (contador == 0) {
@@ -146,14 +146,14 @@ int achar_usuario(cadastro **p) {
             token = strtok(NULL, ";");
             contador++;
         }
-        posicao_struct++; // AvanÃ§a para o prÃ³ximo usuÃ¡rio
+        posicao_struct++; // Avança para o próximo usuário
     }
 
     fclose(arquivo);
     return 0;
 }
 
-// FunÃ§Ã£o para o login, compara as informaÃ§Ãµes recebidas do usuÃ¡rio com o arquivo.txt
+// Função para o login, compara as informações recebidas do usuário com o arquivo.txt
 void login(cadastro *p, int num_usuarios) {
     char nome[100];
     char cpf[12];
@@ -183,28 +183,19 @@ void login(cadastro *p, int num_usuarios) {
         }
 
         if (contador != 0) {
-            printf("|UsuÃ¡rio: %s\n", nome);
+            printf("|Usuário: %s\n", nome);
             menu(p);
-            getchar();  // Tirar o '\n' vindo da funÃ§Ã£o
-            char letra;
-            printf("|Deseja sair(s/n)?|\n");
-            scanf(" %c", &letra);
-            getchar();
-            if (letra == 's') {
-                break;
-            } else {
-                continue;
-            }
-        } else {
-            printf("UsuÃ¡rio nÃ£o cadastrado ou dados incorretos\n");
+            getchar();  // Tirar o '\n' vindo da função
+        } 
+            printf("Usuário não cadastrado ou dados incorretos\n");
             printf("Tente novamente !!!\n");
         }
     }
-}
+
 
 int main() {
     setlocale(LC_ALL, "portuguese");
-    cadastro *pessoas; // Ponteiro para armazenar os dados dos usuÃ¡rios
+    cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
     jogo *jogos;
     int num_jogos = quant_jogos();
@@ -215,9 +206,9 @@ int main() {
             carregar_jogos(&jogos);
             login(pessoas, num_usuarios);
         }
-        free(pessoas); // Libera a memÃ³ria alocada apÃ³s o uso
+        free(pessoas); // Libera a memória alocada após o uso
     } else {
-        printf("Nenhum usuÃ¡rio encontrado no arquivo.\n");
+        printf("Nenhum usuário encontrado no arquivo.\n");
     }
 
     system("pause");
@@ -235,12 +226,12 @@ void menu(cadastro *p) {
         printf("|-----------------------------------|\n");
         printf("| 1 - Comprar Jogo                  |\n");
         printf("| 2 - Vender Jogo                   |\n");
-        printf("| 3 - Adicionar Jogo                |\n");
+        printf("| 3 - Adicionar Avaliação do Jogo   |\n");
         printf("| 4 - Consultar Biblioteca de Jogos |\n");
-        printf("| 5 - Depositar CrÃ©dito             |\n");
+        printf("| 5 - Depositar Crédito             |\n");
         printf("| 6 - Sair                          |\n");
         printf("|-----------------------------------|\n");
-        printf("Qual escolha vocÃª deseja: ");
+        printf("Qual escolha você deseja: ");
         fgets(escolha_str, sizeof(escolha_str), stdin);
         escolha = atoi(escolha_str); // Converte a string para inteiro
 
@@ -252,7 +243,7 @@ void menu(cadastro *p) {
                 vender_jogo();
                 break;
             case 3:
-                adicionar_jogo();
+                adicionar_avaliacao();
                 break;
             case 4:
                 consultar_biblioteca_de_jogos();
@@ -266,7 +257,7 @@ void menu(cadastro *p) {
                 system("pause");
                 exit(0);
             default:
-                printf("Essa opÃ§Ã£o nÃ£o Ã© vÃ¡lida!!\n");
+                printf("Essa opção não é válida!!\n");
         }
     }
 }
@@ -275,15 +266,15 @@ void depositar_credito(float *carteira){
     float valor;
 
     while(1){
-        printf("Quanto deseja depositar (ou 0 para nÃ£o depositar): ");
+        printf("Quanto deseja depositar (ou 0 para não depositar): ");
         scanf("%f", &valor);
 
         if (valor < 0){
-            printf("Valor invÃ¡lido!!\n");
+            printf("Valor inválido!!\n");
         }
         else{
             carteira[indice] += valor;
-            printf("DepÃ³sito realizado com sucesso!!\n");
+            printf("Depósito realizado com sucesso!!\n");
             getchar();
             break;
         }
@@ -302,36 +293,36 @@ void vender_jogo() {
     printf("Hello World 2\n");
 }
 
-void adicionar_jogo() {
+void adicionar_avaliacao() {
     FILE *arquivo;
 
 
     char nome[255];
-    char tipo[255];
-    float valor;
+    char comentario[255];
+    float nota;
 
-    arquivo = fopen("jogos.txt", "a"); // Abre o arquivo jogos.txt para atualizar
+    arquivo = fopen("jogos_avaliacao.txt", "a"); // Abre o arquivo jogos.txt para atualizar
 
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
         exit(1);
     }
 
-    printf("|Qual Ã© o nome do jogo: ");
+    printf("|Qual é o nome do jogo: ");
     scanf("%s", &nome);
 
-    printf("|Qual Ã© o tipo do jogo: ");
-    scanf("%s", &tipo);
+    printf("|Como foi a sua experiência: ");
+    scanf("%s", &comentario);
 
-    printf("|Qual Ã© o valor do jogo: ");
-    scanf("%f", &valor);
+    printf("|Qual é a nota do jogo: ");
+    scanf("%f", &nota);
 
     getchar(); // Tirar o '\n'
 
-    fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor); // Salva no arquivo, com esse formato escrito
+    fprintf(arquivo, "Nome: %s; Comentario: %s; Nota: %.2f\n", nome, comentario, nota); // Salva no arquivo, com esse formato escrito
 
     fclose(arquivo);
-    printf("AtualizaÃ§Ã£o feita com sucesso!!\n");
+    printf("Atualização feita com sucesso!!\n");
 
 
 }
@@ -343,7 +334,7 @@ void remover_jogo() {
 void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
-// <<<<<<< Cheida-patch-1-FunÃƒÂ§ÃƒÂ£o-Adicionar-Jogos
+
 
 void mostrar_arquivo(){
     FILE *arquivo;
@@ -366,7 +357,7 @@ void atualizacao_das_carteiras(float *carteira){
     FILE *carteirafile;
 
     carteirafile = fopen("creditos.bin","wb");
-    
+
      size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
      fclose(carteirafile);
 }
@@ -379,7 +370,7 @@ void iniciacao_arquivos(float *carteira){
     if (carteirafile == NULL){
         printf("Erro ao abrir o arquivo\n");
     }
-    
+
      size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
      fclose(carteirafile);
 }
