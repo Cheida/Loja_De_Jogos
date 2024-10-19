@@ -310,16 +310,16 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
-
-                    if (100 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
                         break;
                     }
+                    else if (100 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    
                     else {
                         // Comparação correta da senha do usuário
                         if (strcmp(senha_usuario, p[indice].senha) == 0) {
@@ -340,13 +340,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (46 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (46 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -369,13 +369,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (149 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (149 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -398,13 +398,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (200 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (200 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -427,13 +427,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (247.27 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (247.27 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -456,13 +456,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (149.95 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (149.95 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -485,13 +485,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (129.99 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (129.99 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -514,13 +514,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (38.50 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (38.50 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -543,13 +543,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (49.99 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (49.99 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
@@ -572,13 +572,13 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                     scanf("%s", senha_usuario);
 
-                    if (122.89 > carteira[indice]) {
-                        printf("Saldo insuficiente!!\n");
-                        break;
-                    }
-                    else if (strcmp(senha_usuario, "0") == 0) {
+                    if (strcmp(senha_usuario, "0") == 0) {
                         getchar();  // Para absorver o '\n'
                         cont++;
+                        break;
+                    }
+                    else if (122.89 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
                     }
                     else {
