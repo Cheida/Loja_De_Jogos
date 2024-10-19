@@ -1,5 +1,10 @@
-1 - Nome: Fort; tipo: Fps; valor: 100.00
-2 - Nome: Hallo; tipo: Tiro; valor: 46.00
-3 - Nome: The Last Of Us; tipo: Adv; valor: 149.00
-4 - Nome: Minecraft; tipo: Sob; valor: 200.00
-5 - Nome: Baldur's Gate; tipo: RPG; valor: 247.00
+1 - Nome: Fort; Tipo: Fps; Valor: 100.00
+2 - Nome: Hallo; Tipo: Tiro; Valor: 46.00
+3 - Nome: The Last Of Us; Tipo: Adv; Valor: 149.00
+4 - Nome: Minecraft; Tipo: Sob; Valor: 200.00
+5 - Nome: Baldur's Gate; Tipo: RPG; Valor: 247.27
+6 - Nome: GTA V; Tipo: Ação; Valor: 149.95
+7 - Nome: Cyberpunk 2077; Tipo: Ação; Valor: 129.99
+8 - Nome: Rainbow Six Siege; Tipo: Tiro; Valor: 38.50
+9 - Nome: Enigma do Medo; Tipo: RPG; Valor: 49.99
+10 - Nome: Borderlands 3; Tipo: Tiro; Valor: 122.89
