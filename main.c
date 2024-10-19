@@ -2,10 +2,6 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
-#define NUM_OF_USERS 10
-int indice;
-
-float carteira[NUM_OF_USERS]={};
 
 // struct que armazena o cadastro dos usuarios
 typedef struct cadastro {
@@ -22,16 +18,17 @@ typedef struct jogo {
 } jogo;
 
 // Funções Gerais
-void depositar_credito(float *carteira);
+void depositar_credito(float *carteira, int indice);
 void iniciacao_arquivos(float *carteira);
 void atualizacao_das_carteiras(float *carteira);
-void comprar_jogo();
+void comprar_jogo(float *carteira, cadastro *p, int indice);
 void vender_jogo();
-void adicionar_jogo();
-void remover_jogo();
+void adicionar_avaliacao();
 void consultar_biblioteca_de_jogos();
 void menu();
 void mostrar_arquivo();
+
+
 
 // Função para limpar o conteúdo, preenchendo com '\0'
 void limparstring(char *array) {
@@ -107,8 +104,7 @@ int carregar_jogos(jogo **j){
         }
         posicao_struct++; // Avança para o próximo jogo
     }
-    fclose(arquivo);
-    return 0;
+
 }
 
 // Encontra os usuários no arquivo e os carrega
@@ -154,11 +150,14 @@ int achar_usuario(cadastro **p) {
     return 0;
 }
 
+
+
 // Função para o login, compara as informações recebidas do usuário com o arquivo.txt
 void login(cadastro *p, int num_usuarios) {
     char nome[100];
     char cpf[12];
     char senha[10];
+    int indice;
 
     while (1) {
         printf("|-----------------------------------|\n");
@@ -185,22 +184,12 @@ void login(cadastro *p, int num_usuarios) {
 
         if (contador != 0) {
             printf("|Usuário: %s\n", nome);
-            menu(p);
+            menu(p, indice);
             getchar();  // Tirar o '\n' vindo da função
-            char letra;
-            printf("|Deseja sair(s/n)?|\n");
-            scanf(" %c", &letra);
-            getchar();
-            if (letra == 's') {
-                break;
-            } else {
-                continue;
-            }
-        } else {
+        } 
             printf("Usuário não cadastrado ou dados incorretos\n");
             printf("Tente novamente !!!\n");
         }
-    }
 }
 
 int main() {
@@ -212,7 +201,6 @@ int main() {
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
-            iniciacao_arquivos(carteira);
             carregar_jogos(&jogos);
             login(pessoas, num_usuarios);
         }
@@ -225,10 +213,16 @@ int main() {
     return 0;
 }
 
+
+
+
 // Menu
-void menu(cadastro *p) {
+void menu(cadastro *p, int indice) {
     int escolha;
     char escolha_str[10];
+    float carteira[10];
+
+    iniciacao_arquivos(carteira);
 
     while (1) {
         printf("|-----------------------------------|\n");
@@ -236,7 +230,7 @@ void menu(cadastro *p) {
         printf("|-----------------------------------|\n");
         printf("| 1 - Comprar Jogo                  |\n");
         printf("| 2 - Vender Jogo                   |\n");
-        printf("| 3 - Adicionar Jogo                |\n");
+        printf("| 3 - Adicionar Avaliação do Jogo   |\n");
         printf("| 4 - Consultar Biblioteca de Jogos |\n");
         printf("| 5 - Depositar Crédito             |\n");
         printf("| 6 - Sair                          |\n");
@@ -247,19 +241,19 @@ void menu(cadastro *p) {
 
         switch (escolha) {
             case 1:
-                comprar_jogo();
+                comprar_jogo(&carteira, p, indice);
                 break;
             case 2:
                 vender_jogo();
                 break;
             case 3:
-                adicionar_jogo();
+                adicionar_avaliacao();
                 break;
             case 4:
                 consultar_biblioteca_de_jogos();
                 break;
             case 5:
-                depositar_credito(carteira);
+                depositar_credito(&carteira, indice);
                 break;
             case 6:
                 atualizacao_das_carteiras(carteira);
@@ -272,7 +266,7 @@ void menu(cadastro *p) {
     }
 }
 
-void depositar_credito(float *carteira){
+void depositar_credito(float *carteira, int indice){
     float valor;
 
     while(1){
@@ -282,14 +276,9 @@ void depositar_credito(float *carteira){
         if (valor < 0){
             printf("Valor inválido!!\n");
         }
-        else if (valor == 0){
-            getchar();
-            break;
-        }
         else{
             carteira[indice] += valor;
             printf("Depósito realizado com sucesso!!\n");
-            printf("Seu saldo atual de créditos é: %.2f\n", carteira[indice]);
             getchar();
             break;
         }
@@ -299,68 +288,338 @@ void depositar_credito(float *carteira){
 
 
 
-void comprar_jogo(float *carteira, jogo *j, int num_jogos, cadastro *p) {
+void comprar_jogo(float *carteira, cadastro *p, int indice) {
     int opcao;
     char senha_usuario[10];  // Ajustando para uma string de senha
 
     while(1){
         printf("Jogos disponíveis:\n");
-        for (int i = 0; i < num_jogos; i++) {
-                // Verificação da leitura de cada jogo
-                printf("%d. Nome: %s, Tipo: %s, Preço: R$%.2f\n", i + 1, j[i].nome, j[i].tipo, j[i].preco);
-        }
+        int cont = 0;
+        mostrar_arquivo();
 
-            printf("Escolha o jogo que deseja comprar (ou 0 para voltar): ");
+            printf("\nEscolha o jogo que deseja comprar (ou 0 para voltar): ");
             scanf("%d", &opcao);
 
-            if (opcao == 0) {
-                getchar();  // Para absorver o '\n'
-                break;
-            } else if (opcao < 1 || opcao > num_jogos) {
-                printf("Opção inválida!!\n");
-            } else {
-                printf("Jogo escolhido: %d. Nome: %s, Tipo: %s, Preço: R$%.2f\n", opcao, j[opcao - 1].nome, j[opcao - 1].tipo, j[opcao - 1].preco);
-                printf("Usuário: %s\n", p[indice].nome);
-                printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
-
-                printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
-                scanf("%s", senha_usuario);
-
-                // Se o preço do jogo for maior que o saldo do usuário
-                if (j[opcao - 1].preco > carteira[indice]) {
-                    printf("Saldo insuficiente!!\n");
-                } else if (strcmp(senha_usuario, "0") == 0) {
+            switch(opcao){
+                case 0:
                     getchar();  // Para absorver o '\n'
+                    cont++;
                     break;
-                } else {
-                    // Comparação correta da senha do usuário
-                    if (strcmp(senha_usuario, p[indice].senha) == 0) {
-                        carteira[indice] -= j[opcao - 1].preco;
-                        printf("Compra realizada com sucesso!!\n");
-                        getchar();  // Para absorver o '\n'
+                case 1:
+                    printf("Jogo escolhido: Fort | Tipo: Fps\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (100 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
                         break;
-                    } else {
-                        printf("Senha incorreta!!\n");
                     }
-                }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 100;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 2:
+                    printf("Jogo escolhido: Hallo | Tipo: Tiro\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (46 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 46;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 3:
+                    printf("Jogo escolhido: The Last Of Us | Tipo: Adv\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (149 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 149;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 4:
+                    printf("Jogo escolhido: Minecraft | Tipo: Sob\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (200 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 200;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 5:
+                    printf("Jogo escolhido: Baldur's Gate | Tipo: RPG\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (247.27 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 247.27;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 6:
+                    printf("Jogo escolhido: GTA V | Tipo: Ação\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (149.95 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 149.95;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 7:
+                    printf("Jogo escolhido: Cyberpunk 2077 | Tipo: Ação\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (129.99 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 129.99;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 8:
+                    printf("Jogo escolhido: Rainbow Six Siege | Tipo: Tiro\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (38.50 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 38.50;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 9:
+                    printf("Jogo escolhido: Enigma do Medo | Tipo: RPG\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (49.99 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 49.99;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                case 10:
+                    printf("Jogo escolhido: Boderlands 3 | Tipo: Tiro\n");
+                    printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+                    printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
+                    scanf("%s", senha_usuario);
+
+                    if (122.89 > carteira[indice]) {
+                        printf("Saldo insuficiente!!\n");
+                        break;
+                    }
+                    else if (strcmp(senha_usuario, "0") == 0) {
+                        getchar();  // Para absorver o '\n'
+                        cont++;
+                        break;
+                    }
+                    else {
+                        // Comparação correta da senha do usuário
+                        if (strcmp(senha_usuario, p[indice].senha) == 0) {
+                            carteira[indice] -= 122.89;
+                            printf("Compra realizada com sucesso!!\n");
+                            getchar();  // Para absorver o '\n'
+                            cont++;
+                            break;
+                        }
+                        else {
+                            printf("Senha incorreta!!\n");
+                            break;
+                        }
+                    }
+                default:
+                    printf("Opção inválida!!\n");
+                    break;
+            }
+            if (cont =! 0){
+                break;
             }
         }
-    }
+}
+
 
 
 void vender_jogo() {
     printf("Hello World 2\n");
 }
 
-void adicionar_jogo() {
+void adicionar_avaliacao() {
     FILE *arquivo;
 
 
     char nome[255];
-    char tipo[255];
-    float valor;
+    char comentario[255];
+    float nota;
 
-    arquivo = fopen("jogos.txt", "a"); // Abre o arquivo jogos.txt para atualizar
+    arquivo = fopen("jogos_avaliacao.txt", "a"); // Abre o arquivo jogos.txt para atualizar
 
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo!\n");
@@ -370,15 +629,15 @@ void adicionar_jogo() {
     printf("|Qual é o nome do jogo: ");
     scanf("%s", nome);
 
-    printf("|Qual é o tipo do jogo: ");
-    scanf("%s", tipo);
+    printf("|Como foi a sua experiência: ");
+    scanf("%s", comentario);
 
-    printf("|Qual é o valor do jogo: ");
-    scanf("%f", &valor);
+    printf("|Qual é a nota do jogo: ");
+    scanf("%f", &nota);
 
     getchar(); // Tirar o '\n'
 
-    fprintf(arquivo, "Nome: %s; tipo: %s; valor: %.2f\n", nome, tipo, valor); // Salva no arquivo, com esse formato escrito
+    fprintf(arquivo, "Nome: %s; Comentario: %s; Nota: %.2f\n", nome, comentario, nota); // Salva no arquivo, com esse formato escrito
 
     fclose(arquivo);
     printf("Atualização feita com sucesso!!\n");
@@ -386,14 +645,12 @@ void adicionar_jogo() {
 
 }
 
-void remover_jogo() {
-    printf("Hello World 4\n");
-}
+
 
 void consultar_biblioteca_de_jogos() {
     printf("Hello World 5\n");
 }
-// <<<<<<< Cheida-patch-1-FunÃ§Ã£o-Adicionar-Jogos
+
 
 void mostrar_arquivo(){
     FILE *arquivo;
@@ -415,21 +672,54 @@ void mostrar_arquivo(){
 void atualizacao_das_carteiras(float *carteira){
     FILE *carteirafile;
 
-    carteirafile = fopen("creditos.bin","wb");
-
-     size_t escrevendo = fwrite(carteira, sizeof(float),10,carteirafile);
-     fclose(carteirafile);
-}
-
-void iniciacao_arquivos(float *carteira){
-    FILE *carteirafile;
-
-    carteirafile = fopen("creditos.bin","rb");
-
-    if (carteirafile == NULL){
-        printf("Erro ao abrir o arquivo\n");
+    carteirafile = fopen("creditos.bin", "wb");
+    if (carteirafile == NULL) {
+        printf("Erro ao abrir o arquivo de créditos para escrita.\n");
+        return;
     }
 
-     size_t lendo = fread(carteira, sizeof(float),10,carteirafile);
-     fclose(carteirafile);
+    size_t escrevendo = fwrite(carteira, sizeof(float), 10, carteirafile); // Escreve os 10 valores de carteira
+    if (escrevendo != 10) {
+        printf("Erro ao salvar os créditos no arquivo.\n");
+    }
+    fclose(carteirafile);
 }
+
+
+void iniciacao_arquivos(float *carteira) {
+    FILE *carteirafile;
+
+    // Tenta abrir o arquivo binário
+    carteirafile = fopen("creditos.bin", "rb");
+
+    // Se o arquivo não for encontrado, inicializa com zero e cria o arquivo
+    if (carteirafile == NULL) {
+        printf("Arquivo de créditos não encontrado. Inicializando com valores zerados.\n");
+        for (int i = 0; i < 10; i++) {
+            carteira[i] = 0.0;  // Inicializa todas as carteiras com zero
+        }
+
+        // Cria o arquivo binário e salva os valores zerados
+        carteirafile = fopen("creditos.bin", "wb");
+        if (carteirafile != NULL) {
+            size_t escrito = fwrite(carteira, sizeof(float), 10, carteirafile); // Escreve 10 valores de float
+            if (escrito != 10) {
+                printf("Erro ao escrever no arquivo de créditos.\n");
+            }
+            fclose(carteirafile);
+        } else {
+            printf("Erro ao criar o arquivo de créditos.\n");
+        }
+    } else {
+        // Se o arquivo foi aberto corretamente, lê os valores da carteira
+        size_t lendo = fread(carteira, sizeof(float), 10, carteirafile); // Lê os 10 valores de float
+        if (lendo != 10) {
+            for (int i = 0; i < 10; i++) {
+                carteira[i] = 0.0; // Inicializa com zero caso a leitura falhe
+            }
+        }
+        fclose(carteirafile);
+    }
+}
+
+
