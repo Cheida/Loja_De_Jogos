@@ -293,8 +293,8 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
     char senha_usuario[10];  // Ajustando para uma string de senha
 
     while(1){
-        printf("Jogos disponíveis:\n");
         int cont = 0;
+        printf("Jogos disponíveis:\n");
         mostrar_arquivo();
 
             printf("\nEscolha o jogo que deseja comprar (ou 0 para voltar): ");
