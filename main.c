@@ -10,13 +10,6 @@ typedef struct cadastro {
     char senha[10];
 } cadastro;
 
-// struct que armazena o jogos disponíveis
-typedef struct jogo {
-    char nome[50];
-    char tipo [10];
-    float preco;
-} jogo;
-
 // Funções Gerais
 void depositar_credito(float *carteira, int indice);
 void iniciacao_arquivos(float *carteira);
@@ -38,18 +31,6 @@ void limparstring(char *array) {
     }
 }
 
-int quant_jogos(){
-    FILE *arquivo;
-    arquivo = fopen("jogos.txt", "r");
-
-    int cont = 0;
-    char linha[255];
-    while(fgets(linha, sizeof(linha), arquivo)){
-        cont++;
-    }
-    fclose(arquivo);
-    return cont;
-}
 // Conta quantos usuários existem no arquivo, retornando a quantidade de linhas
 int contar_usuarios() {
     FILE *arquivo;
@@ -67,45 +48,7 @@ int contar_usuarios() {
     fclose(arquivo);
     return count;
 }
-
-int carregar_jogos(jogo **j){
-    FILE *arquivo;
-    arquivo = fopen("jogos.txt","r");
-
-    if (arquivo == NULL){
-        printf("Erro ao abrir o arquivo\n");
-        return 1;
-    }
-
-    int num_jogos = quant_jogos();
-    *j = (jogo *)malloc(num_jogos * sizeof(jogo));
-
-    if (*j == NULL){
-        printf("Erro ao alocar memória\n");
-        return 1;
-    }
-    int posicao_struct = 0;
-    char linha[255];
-
-    while (fgets(linha, 255, arquivo)) {
-        char *token = strtok(linha, ";");
-        int cont = 0; // Variável para contar os campos (nome, tipo, preco)
-
-        while (token != NULL) {
-            if (cont == 0) {
-                strcpy((*j)[posicao_struct].nome, token); // Armazena o nome
-            } else if (cont == 1) {
-                strcpy((*j)[posicao_struct].tipo, token); // Armazena o tipo
-            } else if (cont == 2) {
-                (*j)[posicao_struct].preco = atof(token); // Armazena a preco
-            }
-            token = strtok(NULL, ";");
-            cont++;
-        }
-        posicao_struct++; // Avança para o próximo jogo
-    }
-
-}
+      
 
 // Encontra os usuários no arquivo e os carrega
 int achar_usuario(cadastro **p) {
@@ -210,12 +153,9 @@ int main() {
     setlocale(LC_ALL, "portuguese");
     cadastro *pessoas; // Ponteiro para armazenar os dados dos usuários
     int num_usuarios = contar_usuarios();
-    jogo *jogos;
-    int num_jogos = quant_jogos();
 
     if (num_usuarios > 0) {
         if (achar_usuario(&pessoas) == 0) {
-            carregar_jogos(&jogos);
             login(pessoas, num_usuarios);
         }
         free(pessoas); // Libera a memória alocada após o uso
