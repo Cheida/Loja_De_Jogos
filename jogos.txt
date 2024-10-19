@@ -1,6 +1,5 @@
-
 1 - Nome: Fort; tipo: fps; valor: 100.00
-2 - Nome: Hallo; tipo: tiro; valor: 46.00
-3 - Nome: The Last Of Us; tipo: aventura; valor: 149.00
-4 - Nome: Minecraft; tipo: sobrevivência; valor: 60.00
+2 - Nome: Hallo; tipo: Tiro; valor: 46.00
+3 - Nome: The Last Of Us; tipo: Adv; valor: 149.00
+4 - Nome: Minecraft; tipo: Sob; valor: 200.00
 5 - Nome: Baldur's Gate; tipo: RPG; valor: 247.00
