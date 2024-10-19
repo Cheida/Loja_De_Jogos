@@ -599,7 +599,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     printf("Opção inválida!!\n");
                     break;
             }
-            if (cont =! 0){
+            if (cont != 0){
                 break;
             }
         }
