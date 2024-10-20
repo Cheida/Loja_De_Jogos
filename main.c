@@ -422,7 +422,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 247.27;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Baldu's Gate");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Baldur's Gate");  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
