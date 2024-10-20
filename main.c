@@ -718,4 +718,3 @@ void iniciacao_arquivos(float *carteira) {
     }
 }
 
-
