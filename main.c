@@ -159,7 +159,6 @@ int main() {
         if (achar_usuario(&pessoas) == 0) {
             login(pessoas, num_usuarios);
         }
-        free(pessoas); // Libera a memória alocada após o uso
     } else {
         printf("Nenhum usuário encontrado no arquivo.\n");
     }
