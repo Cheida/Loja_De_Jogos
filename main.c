@@ -15,7 +15,7 @@ void depositar_credito(float *carteira, int indice);
 void iniciacao_arquivos(float *carteira);
 void atualizacao_das_carteiras(float *carteira);
 void comprar_jogo(float *carteira, cadastro *p, int indice);
-void vender_jogo();
+void vender_jogo(cadastro *p, int indice, float *carteira);
 void adicionar_avaliacao();
 void consultar_biblioteca_de_jogos(cadastro *p, int indice);
 void menu();
@@ -94,19 +94,65 @@ int achar_usuario(cadastro **p) {
 }
 
 // Função que salva os jogos comprados na biblioteca
-void salvar_biblioteca(const char *cpf, const char *nome_jogo) {
-    FILE *arquivo_bib = fopen("biblioteca_jogos.txt", "a");
+int salvar_biblioteca(const char *cpf, const char *nome_jogo, int trasacao) {
+    
+    if (trasacao == 0){
+        FILE *arquivo_bib = fopen("biblioteca_jogos.txt", "a");
 
-    if (arquivo_bib == NULL) {
-        printf("Erro ao abrir o arquivo de biblioteca!\n");
-        return;
-    }
+        if (arquivo_bib == NULL) {
+            printf("Erro ao abrir o arquivo de biblioteca!\n");
+            return;
+        }
+        // Grava o CPF do usuário e o nome do jogo no arquivo
+        fprintf(arquivo_bib, "%s;%s\n", cpf, nome_jogo);
 
-    // Grava o CPF do usuário e o nome do jogo no arquivo
-    fprintf(arquivo_bib, "%s;%s\n", cpf, nome_jogo);
+        fclose(arquivo_bib);
+    } else{
+        FILE *arquivo, *temp;
+        char linha[255];
+        char arquivo_cpf[12], arquivo_nome_jogo[50];
+        int encontrou = 0, cont;
 
-    fclose(arquivo_bib);
+        // Abre o arquivo original para leitura e o temporário para escrita
+        arquivo = fopen("biblioteca_jogos.txt", "r");
+        temp = fopen("temp.txt", "w");
+
+        if (arquivo == NULL || temp == NULL) {
+            printf("Erro ao abrir o arquivo!\n");
+            return;
+        }
+
+        // Lê cada linha do arquivo original
+        while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+            // Divide a linha em partes (CPF e nome do jogo)
+            sscanf(linha, "%[^;];%[^\n]", arquivo_cpf, arquivo_nome_jogo);
+
+            // Se o CPF e nome do jogo da linha não forem iguais aos que queremos excluir, escreve no arquivo temporário
+            if (strcmp(arquivo_cpf, cpf) != 0 || strcmp(arquivo_nome_jogo, nome_jogo) != 0) {
+                fputs(linha, temp);
+            } else {
+                encontrou = 1;
+            }
+        }
+
+        fclose(arquivo);
+        fclose(temp);
+
+        // Se encontrou a linha, renomeia o arquivo temporário para substituir o original
+        if (encontrou) {
+            remove("biblioteca_jogos.txt");       // Remove o arquivo original
+            rename("temp.txt", "biblioteca_jogos.txt"); // Renomeia o temporário para o original
+            return cont = 1;
+        } else {
+            printf("CPF ou jogo não encontrado.\n");
+            remove("temp.txt"); // Exclui o arquivo temporário se nada foi removido
+            return cont = 0;
+        }
+        }
 }
+    
+    
+
 
 
 
@@ -159,6 +205,7 @@ int main() {
         if (achar_usuario(&pessoas) == 0) {
             login(pessoas, num_usuarios);
         }
+        free(pessoas); // Libera a memória alocada após o uso
     } else {
         printf("Nenhum usuário encontrado no arquivo.\n");
     }
@@ -198,7 +245,7 @@ void menu(cadastro *p, int indice) {
                 comprar_jogo(&carteira, p, indice);
                 break;
             case 2:
-                vender_jogo();
+                vender_jogo(p, indice, &carteira);
                 break;
             case 3:
                 adicionar_avaliacao();
@@ -251,7 +298,7 @@ void depositar_credito(float *carteira, int indice){
 
 // Função que compra os jogos
 void comprar_jogo(float *carteira, cadastro *p, int indice) {
-    int opcao; // Variável para armazenar a opção do usuário
+    int opcao, compra = 0; // Variável para armazenar a opção do usuário
     char senha_usuario[10];  // Ajustando para uma string de senha
 
     // Loop infinito para a compra
@@ -293,7 +340,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 100;  // Deduz o valor do jogo da carteira
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Fort");  // Salva a compra na biblioteca do usuário
+                        salvar_biblioteca(p[indice].cpf, "Fort", compra);  // Salva a compra na biblioteca do usuário
                         getchar();  // Para absorver o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -325,7 +372,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 46;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Hallo");  // Salva o jogo na biblioteca do usuário
+                        salvar_biblioteca(p[indice].cpf, "Hallo", compra);  // Salva o jogo na biblioteca do usuário
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -335,9 +382,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo The Last Of Us
+            // Compra do Jogo The_Last_Of_Us
             case 3:
-                printf("Jogo escolhido: The Last Of Us | Tipo: Adv\n");
+                printf("Jogo escolhido: The_Last_Of_Us | Tipo: Adv\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -357,7 +404,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 149;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "The Last Of Us");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "The_Last_Of_Us", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -389,7 +436,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 200;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Minecraft");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Minecraft", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -399,9 +446,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo Baldur's Gate
+            // Compra do Jogo Baldur's_Gate
             case 5:
-                printf("Jogo escolhido: Baldur's Gate | Tipo: RPG\n");
+                printf("Jogo escolhido: Baldur's_Gate | Tipo: RPG\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -421,7 +468,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 247.27;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Baldur's Gate");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Baldur's_Gate", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -431,9 +478,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo GTA V
+            // Compra do Jogo GTA_V
             case 6:
-                printf("Jogo escolhido: GTA V | Tipo: Ação\n");
+                printf("Jogo escolhido: GTA_V | Tipo: Ação\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -452,8 +499,8 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     // Valida a senha do usuário
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 149.95;  // Deduz o valor do jogo
-                        printf("Compra realizada... com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "GTA V");  // Salva o jogo na biblioteca
+                        printf("Compra realizada com sucesso!!\n");
+                        salvar_biblioteca(p[indice].cpf, "GTA_V", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -463,9 +510,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo Cyberpunk 2077
+            // Compra do Jogo Cyberpunk_2077
             case 7:
-                printf("Jogo escolhido: Cyberpunk 2077 | Tipo: Ação\n");
+                printf("Jogo escolhido: Cyberpunk_2077 | Tipo: Ação\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -485,7 +532,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 129.99;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Cyberpunk 2077");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Cyberpunk_2077", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -495,9 +542,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo Rainbow Six Siege
+            // Compra do Jogo Rainbow_Six_Siege
             case 8:
-                printf("Jogo escolhido: Rainbow Six Siege | Tipo: Tiro\n");
+                printf("Jogo escolhido: Rainbow_Six_Siege | Tipo: Tiro\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -517,7 +564,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 38.50;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Rainbow Six Siege");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Rainbow_Six_Siege", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -527,9 +574,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo Enigma do Medo
+            // Compra do Jogo Enigma_do_Medo
             case 9:
-                printf("Jogo escolhido: Enigma do Medo | Tipo: RPG\n");
+                printf("Jogo escolhido: Enigma_do_Medo | Tipo: RPG\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -549,7 +596,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 49.99;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Enigma do Medo");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Enigma_do_Medo", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -559,9 +606,9 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     }
                 }
 
-            // Compra do Jogo Borderlands 3
+            // Compra do Jogo Borderlands_3
             case 10:
-                printf("Jogo escolhido: Borderlands 3 | Tipo: Tiro\n");
+                printf("Jogo escolhido: Borderlands_3 | Tipo: Tiro\n");
                 printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
                 printf("Digite a sua senha para confirmar a compra (ou '0' para voltar ao menu): ");
                 scanf("%s", senha_usuario);
@@ -581,7 +628,7 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
                     if (strcmp(senha_usuario, p[indice].senha) == 0) {
                         carteira[indice] -= 122.89;  // Deduz o valor do jogo
                         printf("Compra realizada com sucesso!!\n");
-                        salvar_biblioteca(p[indice].cpf, "Borderlands 3");  // Salva o jogo na biblioteca
+                        salvar_biblioteca(p[indice].cpf, "Borderlands_3", compra);  // Salva o jogo na biblioteca
                         getchar();  // Absorve o '\n'
                         cont++;  // Incrementa para sair do loop
                         break;
@@ -606,8 +653,58 @@ void comprar_jogo(float *carteira, cadastro *p, int indice) {
 
 
 
-void vender_jogo() {
-    printf("Hello World 2\n");
+void vender_jogo(cadastro *p, int indice, float *carteira) {
+    char nome_jogo[50];
+    int venda = 1;
+    float valor_jogo;
+
+    while(1){
+        int cont = 1; 
+        consultar_biblioteca_de_jogos(p, indice);  // Consulta a biblioteca
+        printf("Digite um nome dos jogo acima que deseja vender (ou '0' para voltar ao menu): ");
+        scanf("%s", nome_jogo);
+
+        // Se o usuário digitar 0 ele será direcionado para o menu
+        if (strcmp(nome_jogo, "0") == 0){
+            getchar();  // Absorve o '\n'
+            break;
+        } else if (strcmp(nome_jogo, "Fort") == 0) {
+            valor_jogo = 100.0; // Valor do jogo Fort
+        } else if (strcmp(nome_jogo, "Hallo") == 0) {
+            valor_jogo = 46.0; // Valor do jogo Hallo
+        } else if (strcmp(nome_jogo, "The_Last_Of_Us") == 0) {
+            valor_jogo = 149.0; // Valor do jogo The_Last_Of_Us
+        } else if (strcmp(nome_jogo, "Minecraft") == 0) {
+            valor_jogo = 200.0; // Valor do jogo Minecraft
+        } else if (strcmp(nome_jogo, "Baldur's_Gate") == 0) {
+            valor_jogo = 247.27; // Valor do jogo Baldur's_Gate
+        } else if (strcmp(nome_jogo, "GTA_V") == 0) {
+            valor_jogo = 149.95; // Valor do jogo GTA_V
+        } else if (strcmp(nome_jogo, "Cyberpunk_2077") == 0) {
+            valor_jogo = 129.99; // Valor do jogo Cyberpunk_2077
+        } else if (strcmp(nome_jogo, "Rainbow_Six_Siege") == 0) {
+            valor_jogo = 38.50; // Valor do jogo Rainbow_Six_Siege
+        } else if (strcmp(nome_jogo, "Enigma_do_Medo") == 0) {
+            valor_jogo = 49.99; // Valor do jogo Enigma_do_Medo
+        } else if (strcmp(nome_jogo, "Borderlands_3") == 0) {
+            valor_jogo = 122.89; // Valor do jogo Borderlands_3
+        }
+        else{
+            printf("Jogo não encontrado!!\n");  // Mensagem de jogo não encontrado
+            cont = 0;
+        }
+        if (cont != 0){
+            cont = salvar_biblioteca(p[indice].cpf, nome_jogo, venda);
+        }
+        // Se o contador for diferente de 0, sai do loop
+        if (cont != 0){
+            carteira[indice] += valor_jogo;
+            printf("Venda realizada com sucesso!!\n");
+            printf("Saldo de sua conta: R$%.2f\n", carteira[indice]);
+            getchar();  // Absorve o '\n'
+            break;
+        }
+    }
 }
 
 void consultar_biblioteca_de_jogos(cadastro *p, int indice) {
