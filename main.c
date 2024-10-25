@@ -20,6 +20,7 @@ void adicionar_avaliacao();
 void consultar_biblioteca_de_jogos(cadastro *p, int indice);
 void menu();
 void mostrar_arquivo();
+void mostrar_avaliacao();
 
 
 
@@ -95,13 +96,13 @@ int achar_usuario(cadastro **p) {
 
 // Função que salva os jogos comprados na biblioteca
 int salvar_biblioteca(const char *cpf, const char *nome_jogo, int trasacao) {
-    
+
     if (trasacao == 0){
         FILE *arquivo_bib = fopen("biblioteca_jogos.txt", "a");
 
         if (arquivo_bib == NULL) {
             printf("Erro ao abrir o arquivo de biblioteca!\n");
-            return;
+            return 0;
         }
         // Grava o CPF do usuário e o nome do jogo no arquivo
         fprintf(arquivo_bib, "%s;%s\n", cpf, nome_jogo);
@@ -119,7 +120,7 @@ int salvar_biblioteca(const char *cpf, const char *nome_jogo, int trasacao) {
 
         if (arquivo == NULL || temp == NULL) {
             printf("Erro ao abrir o arquivo!\n");
-            return;
+            return 0;
         }
 
         // Lê cada linha do arquivo original
@@ -150,8 +151,8 @@ int salvar_biblioteca(const char *cpf, const char *nome_jogo, int trasacao) {
         }
         }
 }
-    
-    
+
+
 
 
 
@@ -190,7 +191,7 @@ void login(cadastro *p, int num_usuarios) {
             printf("|Usuário: %s\n", nome);
             menu(p, indice);
             getchar();  // Tirar o '\n' vindo da função
-        } 
+        }
             printf("Usuário não cadastrado ou dados incorretos\n");
             printf("Tente novamente !!!\n");
         }
@@ -232,9 +233,10 @@ void menu(cadastro *p, int indice) {
         printf("| 1 - Comprar Jogo                  |\n");
         printf("| 2 - Vender Jogo                   |\n");
         printf("| 3 - Adicionar Avaliação do Jogo   |\n");
-        printf("| 4 - Consultar Biblioteca de Jogos |\n");
-        printf("| 5 - Depositar Crédito             |\n");
-        printf("| 6 - Sair                          |\n");
+        printf("| 4 - Mostrar Avaliações dos Jogos  |\n");
+        printf("| 5 - Consultar Biblioteca de Jogos |\n");
+        printf("| 6 - Depositar Crédito             |\n");
+        printf("| 7 - Sair                          |\n");
         printf("|-----------------------------------|\n");
         printf("Qual escolha você deseja: ");
         fgets(escolha_str, sizeof(escolha_str), stdin);
@@ -242,21 +244,24 @@ void menu(cadastro *p, int indice) {
 
         switch (escolha) {
             case 1:
-                comprar_jogo(&carteira, p, indice);
+                comprar_jogo(carteira, p, indice);
                 break;
             case 2:
-                vender_jogo(p, indice, &carteira);
+                vender_jogo(p, indice, carteira);
                 break;
             case 3:
                 adicionar_avaliacao();
                 break;
             case 4:
+                 mostrar_avaliacao();
+                 break;
+            case 5:
                 consultar_biblioteca_de_jogos(p, indice);
                 break;
-            case 5:
-                depositar_credito(&carteira, indice);
-                break;
             case 6:
+                depositar_credito(carteira, indice);
+                break;
+            case 7:
                 atualizacao_das_carteiras(carteira);
                 printf("Ficando OFF...\n");
                 system("pause");
@@ -659,7 +664,7 @@ void vender_jogo(cadastro *p, int indice, float *carteira) {
     float valor_jogo;
 
     while(1){
-        int cont = 1; 
+        int cont = 1;
         consultar_biblioteca_de_jogos(p, indice);  // Consulta a biblioteca
         printf("Digite um nome dos jogo acima que deseja vender (ou '0' para voltar ao menu): ");
         scanf("%s", nome_jogo);
@@ -766,7 +771,7 @@ void adicionar_avaliacao() {
     printf("|Como foi a sua experiência: ");
     scanf("%s", comentario);
 
-    printf("|Qual é a nota do jogo: ");
+    printf("|Qual é a nota do jogo(0 - 10): ");
     scanf("%f", &nota);
 
     getchar(); // Tirar o '\n'
@@ -850,4 +855,20 @@ void iniciacao_arquivos(float *carteira) {
         }
         fclose(carteirafile);
     }
+}
+void mostrar_avaliacao(){
+    FILE *arquivo;
+    char linhas[255];
+
+    arquivo = fopen("jogos_avaliacao.txt", "r"); // Abre o arquivo para ler
+
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        exit(1);
+    }
+
+    while (fgets(linhas, sizeof(linhas), arquivo)){ // Ele vai ler o arquivo linha por linha e vai mostrar no console
+        printf("%s", linhas);
+    }
+    fclose(arquivo);
 }
